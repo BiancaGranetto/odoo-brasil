@@ -3,21 +3,21 @@
     <report file="br_nfse.main_template_br_nfse_danfe"
         id="report_br_nfse_danfe" model="invoice.eletronic"
         name="br_nfse.main_template_br_nfse_danfe"
-        report_type="qweb-pdf" string="Impressão de Danfe"/>
+        report_type="qweb-pdf" string="Impressão de NFS-e"/>
     <record id="paperformat_br_nfse_danfse" model="report.paperformat">
         <field name="name">Danfse</field>
         <field eval="True" name="default"/>
         <field name="orientation">Portrait</field>
         <field name="margin_top">3</field>
-        <field name="margin_bottom">3</field>
-        <field name="margin_left">3</field>
-        <field name="margin_right">3</field>
+        <field name="margin_bottom">2</field>
+        <field name="margin_left">2</field>
+        <field name="margin_right">2</field>
         <field eval="False" name="header_line"/>
         <field name="header_spacing">3</field>
     </record>
     <record id="report_br_nfse_danfe" model="ir.actions.report.xml">
         <field name="paperformat_id" ref="paperformat_br_nfse_danfse"/>
-        <field name="name">Impressao de Danfe Paulistana</field>
+        <field name="name">Impressao de NFS-e Paulistana</field>
     </record>
     <template id="danfse_report_template">
         <style type="text/css">
@@ -33,7 +33,7 @@
             <div class="row" style="border: 1px solid black;">
                 <div class="col-xs-2">
                     <img alt="Logo Prefeitura Campinas"
-                        src="/br_nfse/static/src/img/prefeitura-sp.gif" style="max-height:80px; margin-top:4px; margin-left:10px;"/>
+                        src="/br_nfse/static/src/img/prefeitura-sp.gif" style="max-height:70px; margin-top:4px; margin-left:10px;"/>
                 </div>
                 <div class="col-xs-8" style="padding:0px;text-align:center;font-size:18px;">
                     Prefeitura do Município de São Paulo
@@ -67,7 +67,7 @@
                     <div style="border: 1px solid black; padding: 2px;">
                         <span style="font-size:9px;">Data de Emissão</span>
                         <br/>
-                        <strong t-field="doc.data_emissao"/>
+                        <strong t-field="doc.data_emissao" t-field-options='{"format": "dd/MM/YYYY"}'/>
                     </div>
                     <t t-if="doc.state == 'done'">
                         <div style="border: 1px solid black; padding: 2px;">
@@ -79,11 +79,11 @@
                 </div>
             </div>
             <div class="row" style="border: 1px solid black; padding: 0 0 5px 5px;">
-                <div class="col-xs-1">
-                    <img style="height:65px;margin-top:15px;" t-att-src="'data:image/png;base64,%s' % doc.company_id.logo"/>
+                <div class="col-xs-2">
+                    <img style="height:60px;margin-top:15px;" t-att-src="'data:image/png;base64,%s' % doc.company_id.logo"/>
                     <br/>
                 </div>
-                <div class="col-xs-11">
+                <div class="col-xs-10">
                     <div class="col-xs-12" style="text-align:center;">
                         <strong>PRESTADOR DE SERVIÇOS</strong>
                     </div>
@@ -177,7 +177,7 @@
                     <strong> ---- </strong>
                 </div>
             </div>
-            <div class="row" style="border: 1px solid black;padding: 0 0 5px 5px; min-height:350px;">
+            <div class="row" style="border: 1px solid black;padding: 0 0 5px 5px; min-height:320px;">
                 <div class="col-xs-12" style="text-align:center;">
                     <strong>DISCRIMINAÇÃO DOS SERVIÇOS</strong>
                 </div>
@@ -200,7 +200,7 @@
                 </div>
             </div>
             <div class="row" style="border: 1px solid black; padding:0 0 5px 5px;">
-                <div class="col-xs-2" style="width:20%;text-align:center;">
+                <div class="col-xs-2" style="width:20%;text-align:center; font-size:14px;">
                     INSS(<span/>%):
                     <br/>
                     <t t-if="doc.company_id.fiscal_type == '3'">
@@ -211,7 +211,7 @@
                         <strong>-</strong>
                     </t>
                 </div>
-                <div class="col-xs-2" style="width:20%;text-align:center;">
+                <div class="col-xs-2" style="width:20%;text-align:center; font-size:14px;">
                     <t t-if="doc.valor_retencao_irrf &lt; 10">
                     IR(0,0%)                        
                     </t>
@@ -227,7 +227,7 @@
                     </t>
                 </div>
                 <div class="col-xs-2"
-                        style="width:20%;text-align:center;">
+                        style="width:20%;text-align:center; font-size:14px;">
                     CSLL(<span t-field="doc.eletronic_item_ids[0].csll_aliquota"/>%):
                     <br/>
                     <t t-if="doc.company_id.fiscal_type == '3'">
@@ -238,7 +238,7 @@
                     </t>
                 </div>
                 <div class="col-xs-2"
-                        style="width:20%;text-align:center;">
+                        style="width:20%;text-align:center; font-size:14px;">
                     COFINS(<span t-field="doc.eletronic_item_ids[0].cofins_aliquota"/>%):
                     <br/>
                     <t t-if="doc.company_id.fiscal_type == '3'">
@@ -249,7 +249,7 @@
                     </t>
                 </div>
                 <div class="col-xs-2"
-                        style="width:20%;text-align:center;border">
+                        style="width:20%;text-align:center;border; font-size:14px; ">
                     PIS(<span t-field="doc.eletronic_item_ids[0].pis_aliquota"/>%):
                     <br/>
                     <t t-if="doc.company_id.fiscal_type == '3'">
@@ -313,23 +313,23 @@
                 </div>
             </div>
             <div class="row" style="border: 1px solid black;padding:0 0 5px 5px;">
-                <div class="col-xs-4" style="text-align:center;">
+                <div class="col-xs-4" style="text-align:center; font-size:10px;">
                     Município de Prestação do Serviço:
                     <br/>
                     <strong>-</strong>
                 </div>
-                <div class="col-xs-4" style="text-align:center;">
+                <div class="col-xs-4" style="text-align:center; font-size:10px;">
                     Número Inscrição da Obra:
                     <br/>
                     <strong>-</strong>
                 </div>
-                <div class="col-xs-4" style="text-align:center;">
+                <div class="col-xs-4" style="text-align:center; font-size:10px;">
                     Valor Aproximado dos Tributos / Fonte
                     <br/>
                     <strong>-</strong>
                 </div>
             </div>
-            <div class="row" style="border: 1px solid black;min-height:170px; padding:0 0 5px 5px;">
+            <div class="row" style="border: 1px solid black;min-height:110px; padding:0 0 5px 5px;">
                 <div style="text-align:center">
                     <b>Outras informações</b>
                 </div>
