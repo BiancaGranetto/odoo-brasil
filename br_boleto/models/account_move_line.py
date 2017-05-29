@@ -13,6 +13,7 @@ class AccountMoveLine(models.Model):
 
     boleto_emitido = fields.Boolean(string=u"Emitido")
     nosso_numero = fields.Char(string=u"Nosso Número", size=30)
+    nosso_numero_dv = fields.Char(string=u"Nosso Dígito", size=1)
 
     @api.multi
     def action_print_boleto(self):
@@ -69,14 +70,27 @@ class AccountMoveLine(models.Model):
                                 data atual. Altere a data de vencimento!')
             if not move.boleto_emitido:
                 move.boleto_emitido = True
+                
                 move.nosso_numero = \
                     move.payment_mode_id.nosso_numero_sequence.next_by_id()
-
-            boleto = Boleto.getBoleto(move, move.nosso_numero)
+                
+                nosso_numero_dv = self.test_nosso_numero(move.nosso_numero)
+                
+                if nosso_numero_dv == 'False':
+                    
+                    move.nosso_numero = \
+                        move.payment_mode_id.nosso_numero_sequence.next_by_id()
+                    nosso_numero_dv = self.test_nosso_numero(move.nosso_numero)
+                
+                move.nosso_numero_dv = nosso_numero_dv
+            if move.payment_mode_id.bank_account_id.bank_id.bic == '755':
+                boleto = Boleto.getBoleto(move, move.nosso_numero + str(move.nosso_numero_dv))
+            else:
+                boleto = Boleto.getBoleto(move, move.nosso_numero)
             boleto_list.append(boleto.boleto)
             move.gerar_payment_order()
         return boleto_list
-
+    
     @api.multi
     def open_wizard_print_boleto(self):
         return({
@@ -91,3 +105,38 @@ class AccountMoveLine(models.Model):
                 'default_move_line_id': self.id,
             }
         })
+        
+    def modulo11(self, num, base=9, r=0):            
+        if not isinstance(num, basestring):            
+            raise TypeError            
+        soma = 0            
+        fator = 2            
+        for c in reversed(num):            
+            soma += int(c) * fator            
+            if fator == base:            
+                fator = 1            
+            fator += 1            
+        if r == 0:            
+            soma = soma * 10            
+            digito = soma % 11            
+            if digito == 10:            
+                digito = 0            
+            return digito            
+        if r == 1:            
+            resto = soma % 11            
+            return resto            
+                    
+    @api.multi            
+    def test_nosso_numero(self, nro):            
+        resto2 = self.modulo11('02' + nro, 7, 1)            
+        digito = 11 - resto2            
+        if digito == 10:            
+            return 'False'            
+        elif digito == 11:            
+            dv = 0            
+        else:            
+            dv = digito            
+                  
+        return dv            
+                        
+            

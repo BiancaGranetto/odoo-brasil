@@ -21,10 +21,9 @@ class PaymentOrderLine(models.Model):
     move_line_id = fields.Many2one(
         'account.move.line', string=u'Linhas de Cobrança')
     partner_id = fields.Many2one(
-        'res.partner', related='move_line_id.partner_id',
-        string="Parceiro", readonly=True)
+        'res.partner', related='move_line_id.partner_id', string="Parceiro")
     move_id = fields.Many2one('account.move', string=u"Lançamento de Diário",
-                              related='move_line_id.move_id', readonly=True)
+                              related='move_line_id.move_id')
     nosso_numero = fields.Char(string=u"Nosso Número", size=20)
     payment_mode_id = fields.Many2one(
         'payment.mode', string="Modo de pagamento")

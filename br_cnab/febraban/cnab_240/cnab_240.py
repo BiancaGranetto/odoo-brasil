@@ -49,6 +49,9 @@ class Cnab240(Cnab):
         elif bank == '033':
             from .bancos.santander import Santander240
             return Santander240
+        elif bank == '755':
+            from .bancos.bankofamerica import BankOfAmerica240
+            return BankOfAmerica240
         else:
             return Cnab240
 
@@ -168,7 +171,7 @@ class Cnab240(Cnab):
             'cedente_dv_ag_cc': (self.order.payment_mode_id.bank_account_id.
                                  bra_number_dig),
             'identificacao_titulo': u'0000000',  # TODO
-            'identificacao_titulo_banco': u'0000000',  # TODO
+            'identificacao_titulo_banco': self.nosso_numero_with_dv,  # TODO
             'identificacao_titulo_empresa': (' ' * 25),
             'numero_documento': "%s/%s" % (line.move_id.name, line.name),
             'vencimento_titulo': self.format_date(
@@ -233,7 +236,16 @@ class Cnab240(Cnab):
         header = self._prepare_header()
         self.arquivo = Arquivo(self.bank, **header)
         for line in order.line_ids:
+            if line.payment_mode_id.bank_account_id.bank_id.bic  == '755':
+                self.nosso_numero_with_dv = line.nosso_numero + line.nosso_numero_dv
+            else:
+                self.nosso_numero_with_dv = line.nosso_numero
+                
+            print self.nosso_numero
+            print self.nosso_numero_with_dv
+ 
             seg = self._prepare_segmento(line.move_line_id)
+            print seg
             self.arquivo.incluir_cobranca(header, **seg)
             self.arquivo.lotes[0].header.servico_servico = 1
             # TODO: tratar soma de tipos de cobranca

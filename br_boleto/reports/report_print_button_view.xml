@@ -9,6 +9,8 @@
         <report id="action_insert_reports_print_button_account_invoice"
                 name="br_boleto.report.print"
                 model="account.invoice"
+                attachment="Boleto" 
+                attachment_use="True"
                 string="Boleto"/>
     </data>
 </odoo>
