@@ -53,6 +53,7 @@ class AccountBankStatementImport(models.TransientModel):
             cnab240_file = tempfile.NamedTemporaryFile()
             cnab240_file.write(data_file)
             cnab240_file.flush()
+            
             Arquivo(sicoob, arquivo=open(cnab240_file.name, 'r'))
             return True
         except Exception as e:
@@ -131,7 +132,7 @@ class AccountBankStatementImport(models.TransientModel):
                 if evento.tipo_lancamento == 'D':
                     valor *= -1
                 transacoes.append({
-                    'name': evento.descricao_historico,
+                    'name': evento.descricao_historico + " " + evento.complemento.split(". ",1)[1].strip(),
                     'date': datetime.strptime(
                         str(evento.data_lancamento), '%d%m%Y'),
                     'amount': valor,
@@ -144,7 +145,7 @@ class AccountBankStatementImport(models.TransientModel):
 
         inicio = datetime.strptime(str(header.data_saldo_inicial), '%d%m%Y')
         final = datetime.strptime(str(trailer.data_saldo_final), '%d%m%Y')
-
+        
         vals_bank_statement = {
             'name': u"%s - %s até %s" % (
                 arquivo.header.nome_do_banco,
@@ -155,6 +156,7 @@ class AccountBankStatementImport(models.TransientModel):
             'balance_end_real': arquivo.lotes[0].trailer.valor_saldo_final,
             'transactions': transacoes
         }
+
         account_number = str(arquivo.header.cedente_conta)
         if self.force_journal_account:
             account_number = self.journal_id.bank_acc_number
