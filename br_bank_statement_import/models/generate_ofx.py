@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import csv
 #É utilizado para a conversão da string enviada pelo Odoo (CSV) para uma Matriz
