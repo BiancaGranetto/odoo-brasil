@@ -9,6 +9,7 @@ import StringIO
 from datetime import datetime
 from odoo import fields, models
 from odoo.exceptions import UserError
+from . import generate_ofx
 
 _logger = logging.getLogger(__name__)
 
@@ -25,7 +26,8 @@ class AccountBankStatementImport(models.TransientModel):
 
     force_format = fields.Boolean(string=u'Forçar formato', default=False)
     file_format = fields.Selection([('cnab240', 'Extrato CNAB 240'),
-                                    ('ofx', 'Extrato OFX')],
+                                    ('ofx', 'Extrato OFX'),
+                                    ('cielo', 'Planilha de Pagamentos Cielo')],
                                    string="Formato do Arquivo",
                                    default='cnab240')
     force_journal_account = fields.Boolean(string=u"Forçar conta bancária?")
@@ -37,6 +39,8 @@ class AccountBankStatementImport(models.TransientModel):
             if self.file_format == 'cnab240':
                 self._check_cnab(data_file, raise_error=True)
                 return self._parse_cnab(data_file)
+            if self.file_format == 'cielo':
+                return self._parse_cielo(data_file)
             else:
                 self._check_ofx(data_file, raise_error=True)
                 return self._parse_ofx(data_file)
@@ -165,3 +169,21 @@ class AccountBankStatementImport(models.TransientModel):
             account_number,
             [vals_bank_statement]
         )
+        
+    def _check_ofx(self, data_file, raise_error=False):
+        try:
+            data_file = data_file.replace('\r\n', '\n').replace('\r', '\n')
+            OfxParser.parse(StringIO.StringIO(data_file))
+            return True
+        except Exception as e:
+            if raise_error:
+                raise UserError(u"Arquivo formato inválido:\n%s" % str(e))
+            return False
+        
+#Método receberá o arquivo que foi carregado, enviará para o método _parse_ofx,
+#este método é o encarregado de entregar arquivos ofx para o Odoo.
+    def _parse_cielo(self, data_file, raise_error=False):
+        print data_file
+        file = generate_ofx.main(data_file)
+        return self._parse_ofx(file)
+        

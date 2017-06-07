@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <xpath expr="//ul[@id='statement_format']" position="inside">
                 <li>Extrato Bancário CNAB 240</li>
+                <li>Planilha de Pagamentos realizados pela Cielo</li>
             </xpath>
             <field name="data_file" position="before">
                 <group>
