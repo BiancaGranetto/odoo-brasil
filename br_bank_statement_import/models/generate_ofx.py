@@ -31,7 +31,8 @@ def main(file):
         np.array(row)#Converte de lista -> array para facilitar operações
         if row[0] != "":#Garantia que o código abaixo só se aplique á registros
             dates.append(row[0])#Preenche uma lista com todas as datas da matriz
-            if row[6] == "Pago":#Para extrair valores dos registros Pagos 
+            print row[6]
+            if row[6] == "Pago":#Para extrair valores dos registros Pagos
                 date = formatdate(row[0])#Obtém data
                 order_number = row[1]#Obtém número da ordem de venda
                 partner = row[2]#Obtém quem foi o responsável pela compra 
