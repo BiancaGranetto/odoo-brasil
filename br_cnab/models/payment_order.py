@@ -16,7 +16,6 @@ class PaymentOrder(models.Model):
     cnab_file = fields.Binary('CNAB File', readonly=True)
     file_number = fields.Integer(u'Número sequencial do arquivo', readonly=1)
     data_emissao_cnab = fields.Datetime('Data de Emissão do CNAB')
-    cnab_valido = fields.Boolean(u'CNAB Válido', readonly=1)
 
     @api.multi
     def gerar_cnab(self):
@@ -31,7 +30,7 @@ class PaymentOrder(models.Model):
                 order.payment_mode_id.bank_account_id.bank_bic, '240')()
             remessa = cnab.remessa(order)
 
-            self.name = 'CB%s%s.REM' % (
+            self.name = 'CNAB%s%s.REM' % (
                 time.strftime('%d%m'), str(order.file_number))
             self.state = 'done'
             self.cnab_file = base64.b64encode(remessa)
